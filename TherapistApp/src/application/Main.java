@@ -45,85 +45,6 @@ public class Main extends Application {
 			model = new Model();
 			HBox analysisView = new HBox(), commentView = new HBox();
 			
-			//displays the Menu Bar "File" option with all options and hotkeys
-			MenuBar menuBar = new MenuBar();
-			Menu menuFile = new Menu("File");
-			MenuItem openVideo = new MenuItem("Open Video");
-			openVideo.setAccelerator(KeyCombination.keyCombination("Ctrl+O"));
-			MenuItem openReview = new MenuItem("Open Review");
-			openReview.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+O"));
-			MenuItem close = new MenuItem("Close Project");
-			close.setDisable(true);
-			close.setAccelerator(KeyCombination.keyCombination("Ctrl+W"));
-			MenuItem saveReview = new MenuItem("Save Review");
-			saveReview.setDisable(true);
-			saveReview.setAccelerator(KeyCombination.keyCombination("Ctrl+S"));
-			MenuItem saveReviewAs = new MenuItem("Save Review As");
-			saveReviewAs.setDisable(true);
-			saveReviewAs.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+S"));
-			MenuItem quit = new MenuItem("Quit");
-			quit.setAccelerator(KeyCombination.keyCombination("Ctrl+Q"));
-			
-			//displays the Menu Bar "Navigate" option with all options and hotkeys
-			Menu menuNavigate = new Menu("Navigate");
-			MenuItem analyze = new MenuItem("Make Analysis");
-			analyze.setAccelerator(KeyCombination.keyCombination("Ctrl+N"));
-			analyze.setDisable(true);
-			MenuItem comment = new MenuItem("Make Comments");
-			comment.setAccelerator(KeyCombination.keyCombination("Ctrl+M"));
-			comment.setDisable(true);
-			MenuItem prev = new MenuItem("Previous Section");
-			prev.setAccelerator(KeyCombination.keyCombination("Ctrl+B"));
-			prev.setDisable(true);
-			MenuItem next = new MenuItem("Next Section");
-			next.setAccelerator(KeyCombination.keyCombination("Ctrl+N"));
-			next.setDisable(true);
-			MenuItem rewind = new MenuItem("Rewind 30 Seconds");
-			rewind.setAccelerator(KeyCombination.keyCombination("Ctrl+R"));
-			rewind.setDisable(true);
-			MenuItem foreward = new MenuItem("Fast Forward 30 Seconds");
-			foreward.setAccelerator(KeyCombination.keyCombination("Ctrl+T"));
-			foreward.setDisable(true);
-			
-			//displays the Menu Bar "Help" option with all options and hotkeys
-			Menu menuHelp = new Menu("Help");
-			MenuItem about = new MenuItem("About");
-			
-			//TODO: Set video to 
-			openVideo.setOnAction(event -> {//when open is selected, gets info from selected csv file and enables test options
-				FileChooser fileChooser = new FileChooser();
-				fileChooser.setTitle("Open Video File");
-				File file = fileChooser.showOpenDialog(primaryStage);
-				model.openVideo(file);
-				close.setDisable(false);
-				saveReview.setDisable(false);
-				saveReviewAs.setDisable(false);
-				comment.setDisable(false);
-				next.setDisable(false);
-				rewind.setDisable(false);
-				foreward.setDisable(false);
-			});
-			
-			openReview.setOnAction(event -> {//when open is selected, gets info from selected csv file and enables test options
-				FileChooser fileChooser = new FileChooser();
-				fileChooser.setTitle("Open Text File");
-				File file = fileChooser.showOpenDialog(primaryStage);
-				model.openReview(file);
-				close.setDisable(false);
-				saveReview.setDisable(false);
-				saveReviewAs.setDisable(false);
-				comment.setDisable(false);
-				next.setDisable(false);
-				rewind.setDisable(false);
-				foreward.setDisable(false);
-			});
-			
-			menuFile.getItems().addAll(openVideo, openReview, saveReview, saveReviewAs, close, quit);
-			menuNavigate.getItems().addAll(analyze, comment, prev, next, rewind, foreward);
-			menuHelp.getItems().addAll(about);
-			menuBar.getMenus().addAll(menuFile, menuNavigate, menuHelp);
-			root.setTop(menuBar);
-			
 			//Video View
 			
 			/*Placing Video (Needs Video Selected before Uploading
@@ -210,23 +131,132 @@ public class Main extends Application {
 	        root.setRight(grid);
 	        
 	        //All code at this point creates the Comments View
+	        GridPane grid2 = new GridPane();
+			grid2.setAlignment(Pos.CENTER);
+	        grid2.setHgap(10);
+	        grid2.setVgap(10);
+	        grid2.setScaleShape(true);
+	        grid2.setPadding(new Insets(25, 25, 25, 25));
 	        
 	        ListView<String> list = new ListView<String>();
 	        ObservableList<String> items =FXCollections.observableArrayList (
 	            "Single", "Double", "Suite", "Family App");
 	        list.setItems(items);
+	        grid2.add(list, 0, 0);
 	        
 	        Button deleteComment = new Button("Delete Comment");
 	        Button printComments = new Button("Print Comments");
+	        HBox buttons = new HBox(10);
+	        buttons.getChildren().addAll(deleteComment, printComments);
+	        buttons.setAlignment(Pos.TOP_LEFT);
+	        grid2.add(buttons, 0, 1);
 	        
 	        TextField fromTime = new TextField("0:00");
 	        TextField toTime = new TextField("0:00");
-	        HBox time = new HBox();
-	        time.setAlignment(Pos.TOP_RIGHT);
+	        HBox time = new HBox(10);
+	        time.setAlignment(Pos.TOP_LEFT);
 	        time.getChildren().addAll(new Label("FROM:"), fromTime, new Label("TO:"), toTime);
+	        grid2.add(time, 0, 2);
 	        
 	        TextArea comments = new TextArea("Write comments here...");
+	        grid2.add(comments, 0, 3);
 	        Button add = new Button("Add Comment");
+	        grid2.add(add, 0, 4);
+	        
+	      //displays the Menu Bar "File" option with all options and hotkeys
+			MenuBar menuBar = new MenuBar();
+			Menu menuFile = new Menu("File");
+			MenuItem openVideo = new MenuItem("Open Video");
+			openVideo.setAccelerator(KeyCombination.keyCombination("Ctrl+O"));
+			MenuItem openReview = new MenuItem("Open Review");
+			openReview.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+O"));
+			MenuItem close = new MenuItem("Close Project");
+			close.setDisable(true);
+			close.setAccelerator(KeyCombination.keyCombination("Ctrl+W"));
+			MenuItem saveReview = new MenuItem("Save Review");
+			saveReview.setDisable(true);
+			saveReview.setAccelerator(KeyCombination.keyCombination("Ctrl+S"));
+			MenuItem saveReviewAs = new MenuItem("Save Review As");
+			saveReviewAs.setDisable(true);
+			saveReviewAs.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+S"));
+			MenuItem quit = new MenuItem("Quit");
+			quit.setAccelerator(KeyCombination.keyCombination("Ctrl+Q"));
+			
+			//displays the Menu Bar "Navigate" option with all options and hotkeys
+			Menu menuNavigate = new Menu("Navigate");
+			MenuItem analyze = new MenuItem("Make Analysis");
+			analyze.setAccelerator(KeyCombination.keyCombination("Ctrl+N"));
+			analyze.setDisable(true);
+			MenuItem comment = new MenuItem("Make Comments");
+			comment.setAccelerator(KeyCombination.keyCombination("Ctrl+M"));
+			comment.setDisable(true);
+			MenuItem prev = new MenuItem("Previous Section");
+			prev.setAccelerator(KeyCombination.keyCombination("Ctrl+B"));
+			prev.setDisable(true);
+			MenuItem next = new MenuItem("Next Section");
+			next.setAccelerator(KeyCombination.keyCombination("Ctrl+N"));
+			next.setDisable(true);
+			MenuItem rewind = new MenuItem("Rewind 30 Seconds");
+			rewind.setAccelerator(KeyCombination.keyCombination("Ctrl+R"));
+			rewind.setDisable(true);
+			MenuItem foreward = new MenuItem("Fast Forward 30 Seconds");
+			foreward.setAccelerator(KeyCombination.keyCombination("Ctrl+T"));
+			foreward.setDisable(true);
+			
+			//displays the Menu Bar "Help" option with all options and hotkeys
+			Menu menuHelp = new Menu("Help");
+			MenuItem about = new MenuItem("About");
+			
+			//TODO: Set video to 
+			openVideo.setOnAction(event -> {//when open is selected, gets info from selected csv file and enables test options
+				FileChooser fileChooser = new FileChooser();
+				fileChooser.setTitle("Open Video File");
+				File file = fileChooser.showOpenDialog(primaryStage);
+				if(file != null) {
+					model.openVideo(file);
+					close.setDisable(false);
+					saveReview.setDisable(false);
+					saveReviewAs.setDisable(false);
+					comment.setDisable(false);
+					next.setDisable(false);
+					rewind.setDisable(false);
+					foreward.setDisable(false);
+				}
+			});
+			
+			openReview.setOnAction(event -> {//when open is selected, gets info from selected csv file and enables test options
+				FileChooser fileChooser = new FileChooser();
+				fileChooser.setTitle("Open Text File");
+				File file = fileChooser.showOpenDialog(primaryStage);
+				if(file != null) {
+					model.openVideo(file);
+					close.setDisable(false);
+					saveReview.setDisable(false);
+					saveReviewAs.setDisable(false);
+					comment.setDisable(false);
+					next.setDisable(false);
+					rewind.setDisable(false);
+					foreward.setDisable(false);
+				}
+			});
+			
+			analyze.setOnAction(event -> {//change view to show the analysis screen
+				root.setRight(grid);
+				analyze.setDisable(true);
+				comment.setDisable(false);
+			});
+			
+			comment.setOnAction(event -> {//change view to show the analysis screen
+				root.setRight(grid2);
+				analyze.setDisable(false);
+				comment.setDisable(true);
+			});
+			
+			menuFile.getItems().addAll(openVideo, openReview, saveReview, saveReviewAs, close, quit);
+			menuNavigate.getItems().addAll(analyze, comment, prev, next, rewind, foreward);
+			menuHelp.getItems().addAll(about);
+			menuBar.getMenus().addAll(menuFile, menuNavigate, menuHelp);
+			root.setTop(menuBar);
 	        
 	        //Loads application
 			primaryStage.setTitle("Austism Video Analyzer");
