@@ -110,10 +110,10 @@ public class Main extends Application {
 	                Duration current = mediaPlayer.getCurrentTime();
 	                double timeInSeconds = current.toSeconds();
 	                if (Math.floor(timeInSeconds) % 30 == 0 && timeInSeconds >= 30) {
-	                    willPause = false;
 	                    timeInSeconds -= 30;
 	                }
 	                Duration newTime = new Duration( Math.floor(timeInSeconds / 30) * 30000);
+	                willPause = false;
 	                mediaPlayer.seek(newTime);
 	            }
 	        });
