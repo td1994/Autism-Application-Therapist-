@@ -180,24 +180,6 @@ public class Main extends Application {
 
 	        mediaBar.setVisible(false);
 
-			//Video View
-
-			/*Placing Video (Needs Video Selected before Uploading
-			mediaPane = new StackPane();
-			mediaPane.setId("mediaPane");
-			media = new Media(model.videoPath);
-			mediaPlayer = new MediaPlayer(media);
-			mediaPlayer.setAutoPlay(true);
-			mediaView = new MediaView(mediaPlayer);
-			mediaView.setPreserveRatio(true);
-			mediaPane.getChildren().clear();
-			mediaPane.getChildren().add(mediaView);
-			HBox hbVideo = new HBox();
-			hbVideo.setStyle("-fx-background-color: black;");
-			hbVideo.setAlignment(Pos.CENTER);
-			hbVideo.getChildren().add(mediaPane);
-			root.setLeft(hbVideo);*/
-
 			//All code at this point creates the Fidelity View
 			GridPane grid = new GridPane();
 			grid.setAlignment(Pos.CENTER);
@@ -492,6 +474,30 @@ public class Main extends Application {
 				analyze.setDisable(false);
 				comment.setDisable(true);
 			});
+			
+			rewind.setOnAction(new EventHandler<ActionEvent>() {
+	            public void handle(ActionEvent e) {
+	                Duration current = mediaPlayer.getCurrentTime();
+	                double timeInSeconds = current.toSeconds();
+	                if (Math.floor(timeInSeconds) % 30 == 0 && timeInSeconds >= 30) {
+	                    timeInSeconds -= 30;
+	                }
+	                Duration newTime = new Duration( Math.floor(timeInSeconds / 30) * 30000);
+	                willPause = false;
+	                mediaPlayer.seek(newTime);
+	            }
+	        });
+			
+			foreward.setOnAction(new EventHandler<ActionEvent>() {
+	            public void handle(ActionEvent e) {
+	                Duration current = mediaPlayer.getCurrentTime();
+	                double timeInSeconds = current.toSeconds();
+	                timeInSeconds += 30 - Math.floor(timeInSeconds) % 30;
+	                Duration newTime = new Duration( Math.floor(timeInSeconds / 30) * 30000);
+	                willPause = false;
+	                mediaPlayer.seek(newTime);
+	            }
+	        });
 
 			menuFile.getItems().addAll(openVideo, openReview, saveReview, saveReviewAs, close, quit);
 			menuNavigate.getItems().addAll(analyze, comment, prev, next, rewind, foreward, autoPause);
