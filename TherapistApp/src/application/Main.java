@@ -250,6 +250,7 @@ public class Main extends Application {
 	        grid.add(naturalGrade, 1, 7);
 	        TextField attemptsGrade = new TextField("Grade");
 	        grid.add(attemptsGrade, 1, 8);
+	        grid.setPrefWidth(root.getWidth() * .5);
 	        root.setRight(grid);
 
 	        //All code at this point creates the Comments View
@@ -263,8 +264,10 @@ public class Main extends Application {
 	        ListView<String> list = new ListView<String>();
 	        ObservableList<String> items =FXCollections.observableArrayList (
 	            "Single", "Double", "Suite", "Family App");
+
 	        list.setItems(items);
 	        grid2.add(list, 0, 0);
+	        grid2.setPrefWidth(root.getWidth() * .5);
 
 	        Button deleteComment = new Button("Delete Comment");
 	        Button printComments = new Button("Print Comments");
@@ -295,7 +298,7 @@ public class Main extends Application {
 			openReview.setDisable(true);
 			MenuItem close = new MenuItem("Close Project");
 			close.setDisable(true);
-			close.setAccelerator(KeyCombination.keyCombination("Ctrl+W"));
+			close.setAccelerator(KeyCombination.keyCombination("Ctrl+S"));
 			MenuItem saveReview = new MenuItem("Save Review");
 			saveReview.setDisable(true);
 			saveReview.setAccelerator(KeyCombination.keyCombination("Ctrl+S"));
@@ -314,10 +317,10 @@ public class Main extends Application {
 			comment.setAccelerator(KeyCombination.keyCombination("Ctrl+M"));
 			comment.setDisable(true);
 			MenuItem prev = new MenuItem("Previous Section");
-			prev.setAccelerator(KeyCombination.keyCombination("Ctrl+B"));
+			prev.setAccelerator(KeyCombination.keyCombination("Ctrl+K"));
 			prev.setDisable(true);
 			MenuItem next = new MenuItem("Next Section");
-			next.setAccelerator(KeyCombination.keyCombination("Ctrl+N"));
+			next.setAccelerator(KeyCombination.keyCombination("Ctrl+L"));
 			next.setDisable(true);
 			MenuItem rewind = new MenuItem("Rewind 30 Seconds");
 			rewind.setAccelerator(KeyCombination.keyCombination("Ctrl+R"));
@@ -351,6 +354,7 @@ public class Main extends Application {
                 saveReviewAs.setDisable(false);
                 comment.setDisable(false);
                 next.setDisable(true);
+                prev.setDisable(true);
                 rewind.setDisable(true);
                 foreward.setDisable(true);
 			});
@@ -369,6 +373,7 @@ public class Main extends Application {
 					saveReviewAs.setDisable(false);
 					comment.setDisable(false);
 					next.setDisable(false);
+					prev.setDisable(false);
 					rewind.setDisable(false);
 					foreward.setDisable(false);
 					media =  new Media(model.videoPath);
@@ -474,7 +479,7 @@ public class Main extends Application {
 				analyze.setDisable(false);
 				comment.setDisable(true);
 			});
-			
+
 			rewind.setOnAction(new EventHandler<ActionEvent>() {
 	            public void handle(ActionEvent e) {
 	                Duration current = mediaPlayer.getCurrentTime();
@@ -487,7 +492,7 @@ public class Main extends Application {
 	                mediaPlayer.seek(newTime);
 	            }
 	        });
-			
+
 			foreward.setOnAction(new EventHandler<ActionEvent>() {
 	            public void handle(ActionEvent e) {
 	                Duration current = mediaPlayer.getCurrentTime();
@@ -498,6 +503,30 @@ public class Main extends Application {
 	                mediaPlayer.seek(newTime);
 	            }
 	        });
+
+            prev.setOnAction(new EventHandler<ActionEvent>() {
+                public void handle(ActionEvent e) {
+                    Duration current = mediaPlayer.getCurrentTime();
+                    double timeInSeconds = current.toSeconds();
+                    if (Math.floor(timeInSeconds) % 60 == 0 && timeInSeconds >= 60) {
+                        timeInSeconds -= 60;
+                    }
+                    Duration newTime = new Duration( Math.floor(timeInSeconds / 60) * 60000);
+                    willPause = false;
+                    mediaPlayer.seek(newTime);
+                }
+            });
+
+	          next.setOnAction(new EventHandler<ActionEvent>() {
+	                public void handle(ActionEvent e) {
+	                    Duration current = mediaPlayer.getCurrentTime();
+	                    double timeInSeconds = current.toSeconds();
+	                    timeInSeconds += 60 - Math.floor(timeInSeconds) % 60;
+	                    Duration newTime = new Duration( Math.floor(timeInSeconds / 60) * 60000);
+	                    willPause = false;
+	                    mediaPlayer.seek(newTime);
+	                }
+	            });
 
 			menuFile.getItems().addAll(openVideo, openReview, saveReview, saveReviewAs, close, quit);
 			menuNavigate.getItems().addAll(analyze, comment, prev, next, rewind, foreward, autoPause);
