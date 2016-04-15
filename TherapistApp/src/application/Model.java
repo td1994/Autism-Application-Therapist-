@@ -8,36 +8,36 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 
 public class Model {
+	/**
+	 * The path of the video being reviewed
+	 */
 	public String videoPath;
+	/**
+	 * The path of the files being used
+	 */
 	public String filePath;
-	private Media media;
-	private MediaPlayer mediaPlayer;
-	private MediaView mediaView;
-	private StackPane mediaPane; 
-	private MediaControl control;
-	public int pos;
-	
-	//opens a video file and has it playing in a media player
-	MediaControl openVideo(File file, double width, double height){
+
+	// ----------------------------------------------------------
+	/**
+	 * Opens a video from file
+	 * @param file the file to be read
+	 */
+	public void openVideo(File file){
 		try {
 			videoPath = "file://" + file.getCanonicalPath().replace(" ", "%20").replace("\\", "/").replaceAll("^.:", "");
-			//Video View
-			
-			mediaPane = new StackPane();
-			mediaPane.setId("mediaPane");
-			media = new Media(videoPath);
-			mediaPlayer = new MediaPlayer(media);
-			mediaPlayer.setAutoPlay(true);
-			control = new MediaControl(mediaPlayer, width, height);
-			pos = 0;
-			return control;
+			//System.out.println("video path is " + videoPath);
+			//TODO: have video loaded into media player.
 		}
 		catch (Exception e) {
 			System.out.println(e);
 		}
-		return null;
 	}
-	
+
+	// ----------------------------------------------------------
+	/**
+	 * Opens a text file for review
+	 * @param file the file to be read
+	 */
 	public void openReview(File file){
 		try {
 			filePath = "file://" + file.getCanonicalPath().replace(" ", "%20").replace("\\", "/").replaceAll("^.:", "");
@@ -46,10 +46,5 @@ public class Model {
 		catch (Exception e) {
 			System.out.println(e);
 		}
-	}
-	
-	public void moveToSection() {
-		System.out.println(pos);
-		control.goToMinute(pos);
 	}
 }
