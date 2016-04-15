@@ -16,7 +16,13 @@ public class Model {
 	 * The path of the files being used
 	 */
 	public String filePath;
+	
+	private boolean[][] fidelityResponses;
 
+	public Model() {
+		fidelityResponses = new boolean[10][9];
+	}
+	
 	// ----------------------------------------------------------
 	/**
 	 * Opens a video from file
@@ -46,5 +52,9 @@ public class Model {
 		catch (Exception e) {
 			System.out.println(e);
 		}
+	}
+	
+	public void fidelityResponse(int minute, int question, boolean response) {
+		fidelityResponses[minute][question] = response;
 	}
 }

@@ -6,7 +6,6 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -22,21 +21,19 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Slider;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.media.Media;
-import javafx.scene.media.MediaMarkerEvent;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.scene.media.MediaPlayer.Status;
@@ -52,7 +49,6 @@ public class Main extends Application {
     private final boolean repeat = false;
     private boolean stopRequested = false;
     private boolean atEndOfMedia = false;
-    private boolean mediaActive = false;
     private Duration duration;
     private Slider timeSlider;
     private Label playTime;
@@ -68,7 +64,6 @@ public class Main extends Application {
 			Scene scene = new Scene(root,1024,768);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			model = new Model();
-			HBox analysisView = new HBox(), commentView = new HBox();
 	        mediaPane = new StackPane();
 	        mediaPane.setId("mediaPane");
 
@@ -232,25 +227,258 @@ public class Main extends Application {
 	        grid.add(attempts, 0, 8);
 	        grid.add(outOfTenLabel, 1, 9);
 
-	        TextField childAttnGrade = new TextField("Grade");
-	        grid.add(childAttnGrade, 1, 0);
-	        TextField clearOppGrade = new TextField("Grade");
-	        grid.add(clearOppGrade, 1, 1);
-	        TextField totalGrade = new TextField("Grade");
-	        grid.add(totalGrade, 1, 2);
-	        TextField maintenanceGrade = new TextField("Grade");
-	        grid.add(maintenanceGrade, 1, 3);
-	        TextField childChoiceGrade = new TextField("Grade");
-	        grid.add(childChoiceGrade, 1, 4);
-	        TextField sharedControlGrade = new TextField("Grade");
-	        grid.add(sharedControlGrade, 1, 5);
-	        TextField contingentGrade = new TextField("Grade");
-	        grid.add(contingentGrade, 1, 6);
-	        TextField naturalGrade = new TextField("Grade");
-	        grid.add(naturalGrade, 1, 7);
-	        TextField attemptsGrade = new TextField("Grade");
-	        grid.add(attemptsGrade, 1, 8);
-	        grid.setPrefWidth(root.getWidth() * .5);
+	        ToggleGroup childAttnGrade = new ToggleGroup();
+	        RadioButton caNeg = new RadioButton("-");
+	        caNeg.setToggleGroup(childAttnGrade);
+	        RadioButton caPos = new RadioButton("+");
+	        caPos.setToggleGroup(childAttnGrade);
+	        HBox hca = new HBox(10);
+	        hca.getChildren().addAll(caNeg, caPos);
+	        grid.add(hca, 1, 0);
+	        
+	        ToggleGroup clearOppGrade = new ToggleGroup();
+	        RadioButton coNeg = new RadioButton("-");
+	        coNeg.setToggleGroup(clearOppGrade);
+	        RadioButton coPos = new RadioButton("+");
+	        coPos.setToggleGroup(clearOppGrade);
+	        HBox hco = new HBox(10);
+	        hco.getChildren().addAll(coNeg, coPos);
+	        grid.add(hco, 1, 1);
+	        
+	        ToggleGroup totalGrade = new ToggleGroup();
+	        RadioButton tNeg = new RadioButton("-");
+	        tNeg.setToggleGroup(totalGrade);
+	        RadioButton tPos = new RadioButton("+");
+	        tPos.setToggleGroup(totalGrade);
+	        HBox ht = new HBox(10);
+	        ht.getChildren().addAll(tNeg, tPos);
+	        grid.add(ht, 1, 2);
+	        
+	        ToggleGroup maintenanceGrade = new ToggleGroup();
+	        RadioButton mNeg = new RadioButton("-");
+	        mNeg.setToggleGroup(maintenanceGrade);
+	        RadioButton mPos = new RadioButton("+");
+	        mPos.setToggleGroup(maintenanceGrade);
+	        HBox hm = new HBox(10);
+	        hm.getChildren().addAll(mNeg, mPos);
+	        grid.add(hm, 1, 3);
+	        
+	        ToggleGroup childChoiceGrade = new ToggleGroup();
+	        RadioButton ccNeg = new RadioButton("-");
+	        ccNeg.setToggleGroup(childChoiceGrade);
+	        RadioButton ccPos = new RadioButton("+");
+	        ccPos.setToggleGroup(childChoiceGrade);
+	        HBox hcc = new HBox(10);
+	        hcc.getChildren().addAll(ccNeg, ccPos);
+	        grid.add(hcc, 1, 4);
+	        
+	        ToggleGroup sharedControlGrade = new ToggleGroup();
+	        RadioButton scNeg = new RadioButton("-");
+	        scNeg.setToggleGroup(sharedControlGrade);
+	        RadioButton scPos = new RadioButton("+");
+	        scPos.setToggleGroup(sharedControlGrade);
+	        HBox hsc = new HBox(10);
+	        hsc.getChildren().addAll(scNeg, scPos);
+	        grid.add(hsc, 1, 5);
+	        
+	        ToggleGroup contingentGrade = new ToggleGroup();
+	        RadioButton cNeg = new RadioButton("-");
+	        cNeg.setToggleGroup(contingentGrade);
+	        RadioButton cPos = new RadioButton("+");
+	        cPos.setToggleGroup(contingentGrade);
+	        HBox hc = new HBox(10);
+	        hc.getChildren().addAll(cNeg, cPos);
+	        grid.add(hc, 1, 6);
+	        
+	        ToggleGroup naturalGrade = new ToggleGroup();
+	        RadioButton nNeg = new RadioButton("-");
+	        nNeg.setToggleGroup(naturalGrade);
+	        RadioButton nPos = new RadioButton("+");
+	        nPos.setToggleGroup(naturalGrade);
+	        HBox hn = new HBox(10);
+	        hn.getChildren().addAll(nNeg, nPos);
+	        grid.add(hn, 1, 7);
+	        
+	        ToggleGroup attemptsGrade = new ToggleGroup();
+	        RadioButton aNeg = new RadioButton("-");
+	        aNeg.setToggleGroup(attemptsGrade);
+	        RadioButton aPos = new RadioButton("+");
+	        aPos.setToggleGroup(attemptsGrade);
+	        HBox ha = new HBox(10);
+	        ha.getChildren().addAll(aNeg, aPos);
+	        grid.add(ha, 1, 8);
+	        
+	        caNeg.setOnAction(new EventHandler<ActionEvent>() {
+	        	@Override
+	        	public void handle(ActionEvent e)
+	        	{
+	        		if(model.videoPath != null) {
+	        			model.fidelityResponse((int)(Math.floor(mediaPlayer.getCurrentTime().toMinutes())), 0, false);
+	        		}
+	        	}
+	        });
+	        caPos.setOnAction(new EventHandler<ActionEvent>() {
+	        	@Override
+	        	public void handle(ActionEvent e)
+	        	{
+	        		if(model.videoPath != null) {
+	        			model.fidelityResponse((int)(Math.floor(mediaPlayer.getCurrentTime().toMinutes())), 0, true);
+	        		}
+	        	}
+	        });
+	        
+	        coNeg.setOnAction(new EventHandler<ActionEvent>() {
+	        	@Override
+	        	public void handle(ActionEvent e)
+	        	{
+	        		if(model.videoPath != null) {
+	        			model.fidelityResponse((int)(Math.floor(mediaPlayer.getCurrentTime().toMinutes())), 1, false);
+	        		}
+	        	}
+	        });
+	        coPos.setOnAction(new EventHandler<ActionEvent>() {
+	        	@Override
+	        	public void handle(ActionEvent e)
+	        	{
+	        		if(model.videoPath != null) {
+	        			model.fidelityResponse((int)(Math.floor(mediaPlayer.getCurrentTime().toMinutes())), 1, true);
+	        		}
+	        	}
+	        });
+	        
+	        tNeg.setOnAction(new EventHandler<ActionEvent>() {
+	        	@Override
+	        	public void handle(ActionEvent e)
+	        	{
+	        		if(model.videoPath != null) {
+	        			model.fidelityResponse((int)(Math.floor(mediaPlayer.getCurrentTime().toMinutes())), 2, false);
+	        		}
+	        	}
+	        });
+	        tPos.setOnAction(new EventHandler<ActionEvent>() {
+	        	@Override
+	        	public void handle(ActionEvent e)
+	        	{
+	        		if(model.videoPath != null) {
+	        			model.fidelityResponse((int)(Math.floor(mediaPlayer.getCurrentTime().toMinutes())), 2, true);
+	        		}
+	        	}
+	        });
+	        
+	        mNeg.setOnAction(new EventHandler<ActionEvent>() {
+	        	@Override
+	        	public void handle(ActionEvent e)
+	        	{
+	        		if(model.videoPath != null) {
+	        			model.fidelityResponse((int)(Math.floor(mediaPlayer.getCurrentTime().toMinutes())), 3, false);
+	        		}
+	        	}
+	        });
+	        mPos.setOnAction(new EventHandler<ActionEvent>() {
+	        	@Override
+	        	public void handle(ActionEvent e)
+	        	{
+	        		if(model.videoPath != null) {
+	        			model.fidelityResponse((int)(Math.floor(mediaPlayer.getCurrentTime().toMinutes())), 3, true);
+	        		}
+	        	}
+	        });
+	        
+	        ccNeg.setOnAction(new EventHandler<ActionEvent>() {
+	        	@Override
+	        	public void handle(ActionEvent e)
+	        	{
+	        		if(model.videoPath != null) {
+	        			model.fidelityResponse((int)(Math.floor(mediaPlayer.getCurrentTime().toMinutes())), 4, false);
+	        		}
+	        	}
+	        });
+	        ccPos.setOnAction(new EventHandler<ActionEvent>() {
+	        	@Override
+	        	public void handle(ActionEvent e)
+	        	{
+	        		if(model.videoPath != null) {
+	        			model.fidelityResponse((int)(Math.floor(mediaPlayer.getCurrentTime().toMinutes())), 4, true);
+	        		}
+	        	}
+	        });
+	        
+	        scNeg.setOnAction(new EventHandler<ActionEvent>() {
+	        	@Override
+	        	public void handle(ActionEvent e)
+	        	{
+	        		if(model.videoPath != null) {
+	        			model.fidelityResponse((int)(Math.floor(mediaPlayer.getCurrentTime().toMinutes())), 5, false);
+	        		}
+	        	}
+	        });
+	        scPos.setOnAction(new EventHandler<ActionEvent>() {
+	        	@Override
+	        	public void handle(ActionEvent e)
+	        	{
+	        		if(model.videoPath != null) {
+	        			model.fidelityResponse((int)(Math.floor(mediaPlayer.getCurrentTime().toMinutes())), 5, true);
+	        		}
+	        	}
+	        });
+	        
+	        cNeg.setOnAction(new EventHandler<ActionEvent>() {
+	        	@Override
+	        	public void handle(ActionEvent e)
+	        	{
+	        		if(model.videoPath != null) {
+	        			model.fidelityResponse((int)(Math.floor(mediaPlayer.getCurrentTime().toMinutes())), 6, false);
+	        		}
+	        	}
+	        });
+	        cPos.setOnAction(new EventHandler<ActionEvent>() {
+	        	@Override
+	        	public void handle(ActionEvent e)
+	        	{
+	        		if(model.videoPath != null) {
+	        			model.fidelityResponse((int)(Math.floor(mediaPlayer.getCurrentTime().toMinutes())), 6, true);
+	        		}
+	        	}
+	        });
+	        
+	        nNeg.setOnAction(new EventHandler<ActionEvent>() {
+	        	@Override
+	        	public void handle(ActionEvent e)
+	        	{
+	        		if(model.videoPath != null) {
+	        			model.fidelityResponse((int)(Math.floor(mediaPlayer.getCurrentTime().toMinutes())), 7, false);
+	        		}
+	        	}
+	        });
+	        nPos.setOnAction(new EventHandler<ActionEvent>() {
+	        	@Override
+	        	public void handle(ActionEvent e)
+	        	{
+	        		if(model.videoPath != null) {
+	        			model.fidelityResponse((int)(Math.floor(mediaPlayer.getCurrentTime().toMinutes())), 7, true);
+	        		}
+	        	}
+	        });
+	        
+	        aNeg.setOnAction(new EventHandler<ActionEvent>() {
+	        	@Override
+	        	public void handle(ActionEvent e)
+	        	{
+	        		if(model.videoPath != null) {
+	        			model.fidelityResponse((int)(Math.floor(mediaPlayer.getCurrentTime().toMinutes())), 8, false);
+	        		}
+	        	}
+	        });
+	        aPos.setOnAction(new EventHandler<ActionEvent>() {
+	        	@Override
+	        	public void handle(ActionEvent e)
+	        	{
+	        		if(model.videoPath != null) {
+	        			model.fidelityResponse((int)(Math.floor(mediaPlayer.getCurrentTime().toMinutes())), 8, true);
+	        		}
+	        	}
+	        });
+	        
 	        root.setRight(grid);
 
 	        //All code at this point creates the Comments View
@@ -262,10 +490,10 @@ public class Main extends Application {
 	        grid2.setPadding(new Insets(25, 25, 25, 25));
 
 	        ListView<String> list = new ListView<String>();
-	        ObservableList<String> items =FXCollections.observableArrayList (
+	        /*ObservableList<String> items =FXCollections.observableArrayList (
 	            "Single", "Double", "Suite", "Family App");
 
-	        list.setItems(items);
+	        list.setItems(items);*/
 	        grid2.add(list, 0, 0);
 	        grid2.setPrefWidth(root.getWidth() * .5);
 
@@ -376,6 +604,26 @@ public class Main extends Application {
 					prev.setDisable(false);
 					rewind.setDisable(false);
 					foreward.setDisable(false);
+					
+					caNeg.setSelected(false);
+					caPos.setSelected(false);
+					coNeg.setSelected(false);
+					coPos.setSelected(false);
+					tNeg.setSelected(false);
+					tPos.setSelected(false);
+					mNeg.setSelected(false);
+					mPos.setSelected(false);
+					ccNeg.setSelected(false);
+					ccPos.setSelected(false);
+					scNeg.setSelected(false);
+					scPos.setSelected(false);
+					cNeg.setSelected(false);
+					cPos.setSelected(false);
+					nNeg.setSelected(false);
+					nPos.setSelected(false);
+					aNeg.setSelected(false);
+					aPos.setSelected(false);
+					
 					media =  new Media(model.videoPath);
 					mediaPlayer = new MediaPlayer(media);
 					mediaPlayer.setAutoPlay(true);
@@ -410,7 +658,24 @@ public class Main extends Application {
 		                    String oldText = outOfTenLabel.getText();
 		                    outOfTenLabel.setText(timeSlot + " of 10 minutes");
 		                    if (!(oldText.equals(outOfTenLabel.getText()))) {
-
+		                    	caNeg.setSelected(false);
+		    					caPos.setSelected(false);
+		    					coNeg.setSelected(false);
+		    					coPos.setSelected(false);
+		    					tNeg.setSelected(false);
+		    					tPos.setSelected(false);
+		    					mNeg.setSelected(false);
+		    					mPos.setSelected(false);
+		    					ccNeg.setSelected(false);
+		    					ccPos.setSelected(false);
+		    					scNeg.setSelected(false);
+		    					scPos.setSelected(false);
+		    					cNeg.setSelected(false);
+		    					cPos.setSelected(false);
+		    					nNeg.setSelected(false);
+		    					nPos.setSelected(false);
+		    					aNeg.setSelected(false);
+		    					aPos.setSelected(false);
 		                    }
                         });
 		                mediaPlayer.setOnPlaying(new Runnable() {
