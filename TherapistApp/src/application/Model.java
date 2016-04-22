@@ -37,15 +37,16 @@ public class Model {
 	 * The path of the files being used
 	 */
 	public String filePath;
-	
+
 	public boolean[][] fidelityResponses;
 	public ArrayList<Comment> comments;
+	public EncryptFile encryptor;
 
 	public Model() {
 		fidelityResponses = new boolean[10][9];
 		comments = new ArrayList<Comment>();
 	}
-	
+
 	// ----------------------------------------------------------
 	/**
 	 * Opens a video from file
@@ -54,10 +55,23 @@ public class Model {
 	public void openVideo(File file){
 		try {
 			videoPath = "file://" + file.getCanonicalPath().replace(" ", "%20").replace("\\", "/").replaceAll("^.:", "");
+			showMessage("Decrypting Video: Please be patient");
+			encryptor.encrypt(file.getCanonicalPath(), 1024);
 		}
 		catch (Exception e) {
 			System.out.println(e);
 		}
+	}
+
+	public void closeVideo() {
+	    try {
+	        showMessage("Encrypting Video: Please be patient");
+	        encryptor.encrypt(toCanonicalPath(videoPath), 1024);
+	    }
+        catch (Exception e) {
+            showMessage("Error: File Encryption Failed");
+            e.printStackTrace();
+        }
 	}
 
 	// ----------------------------------------------------------
@@ -74,6 +88,7 @@ public class Model {
 			BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
 			videoPath = br.readLine();
 			videoPath = videoPath.substring(videoPath.indexOf(':') + 1);
+			encryptor.encrypt(toCanonicalPath(videoPath), 1024);
 			for(int i = 0; i < fidelityResponses.length; i++) {
 				String input = br.readLine();
 				input = input.substring(input.indexOf(':') + 1);
@@ -107,7 +122,7 @@ public class Model {
 		}
 		return null;
 	}
-	
+
 	public void fidelityResponse(int minute, int question, boolean response) {
 		fidelityResponses[minute][question] = response;
 	}
@@ -122,18 +137,18 @@ public class Model {
 		items.add(startTime + "-" + endTime + ": " + comment);
 		return items;
 	}
-	
+
 	public Comment getComment(int index) {
 		return comments.get(index);
 	}
-	
+
 	public ObservableList<String> removeComment(int index, ListView list) {
 		comments.remove(index);
 		ObservableList<String> items = list.getItems();
 		items.remove(index);
 		return items;
 	}
-	
+
 	public ObservableList<String> editComment(int index, String startTime, String endTime, String comment, ListView list) {
 		comments.remove(index);
 		Comment com = new Comment();
@@ -146,7 +161,7 @@ public class Model {
 		items.add(index, startTime + "-" + endTime + ": " + comment);
 		return items;
 	}
-	
+
 	public void printComments(File file) throws FileNotFoundException, IOException {
 		Comment[] commentArray = new Comment[comments.size()];
 		comments.toArray(commentArray);
@@ -161,12 +176,12 @@ public class Model {
 		}
 		writer.close();
 	}
-	
+
 	public void showMessage(String message) {
 		MessageDialog dialog = new MessageDialog(message);
 		dialog.show();
 	}
-	
+
 	public void saveReview() throws FileNotFoundException {
 		Comment[] commentArray = new Comment[comments.size()];
 		comments.toArray(commentArray);
@@ -186,11 +201,15 @@ public class Model {
 		}
 		writer.close();
 	}
-	
+
 	public void saveReviewAs(File file) throws IOException {
 		filePath = file.getCanonicalPath() + ".txt";
 		saveReview();
 	}
+
+	   public String toCanonicalPath(String filePath) {
+	        return filePath.replace("file://", "C:").replace("/", "\\");
+	    }
 }
 
 class MessageDialog extends Stage {
@@ -198,14 +217,14 @@ class MessageDialog extends Stage {
 	/**
 	 * Creates an instance of the <code>MessageDialog</code> class.
 	 * Use the <code>show</code> to diaply the dialog.
-	 * 
+	 *
 	 * @param message The message to be displayed.
 	 */
 	public MessageDialog(String message) {
 		super(StageStyle.DECORATED);
 		setResizable(false);
 		initModality(Modality.APPLICATION_MODAL);
-		setTitle("About Homework 2");
+		setTitle("Processsing");
 
 		BorderPane dialogRoot = new BorderPane();
 		dialogRoot.getStyleClass().add("message-dialog");
@@ -213,7 +232,7 @@ class MessageDialog extends Stage {
 		Scene dialogScene = new Scene(dialogRoot, 400, 300);
 		//dialogScene.getStylesheets().add(getClass().getResource("hw2.css").toExternalForm());
 		setScene(dialogScene);
-		
+
 		Label mesLabel = new Label(message);
 		mesLabel.setWrapText(true);
 		dialogRoot.setCenter(mesLabel);

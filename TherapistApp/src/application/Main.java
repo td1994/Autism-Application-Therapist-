@@ -1,7 +1,7 @@
 package application;
 
 import java.io.File;
-
+import java.util.Optional;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
@@ -15,18 +15,9 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Slider;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -229,10 +220,10 @@ public class Main extends Application {
 	        grid.add(contingent, 0, 6);
 	        grid.add(natural, 0, 7);
 	        grid.add(attempts, 0, 8);
-	        grid.add(outOfTenLabel, 1, 9);
-	        
+	        grid.add(Time, 1, 9);
+
 	        CheckBox childAttnCB = new CheckBox();
-	        CheckBox clearOppCB = new CheckBox(); 
+	        CheckBox clearOppCB = new CheckBox();
 	        CheckBox totalCB = new CheckBox();
 	        CheckBox maintenanceCB = new CheckBox();
 	        CheckBox childChoiceCB = new CheckBox();
@@ -240,7 +231,7 @@ public class Main extends Application {
 	        CheckBox contingentCB = new CheckBox();
 	        CheckBox naturalCB = new CheckBox();
 	        CheckBox attemptsCB = new CheckBox();
-	        
+
 	        //adds HBoxes to the grid
 	        grid.add(childAttnCB, 1, 0);
 	        grid.add(clearOppCB, 1, 1);
@@ -251,7 +242,7 @@ public class Main extends Application {
 	        grid.add(contingentCB, 1, 6);
 	        grid.add(naturalCB, 1, 7);
 	        grid.add(attemptsCB, 1, 8);
-	        
+
 	        childAttnCB.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
@@ -260,7 +251,7 @@ public class Main extends Application {
 	        		}
 				}
 			});
-	        
+
 	        clearOppCB.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
@@ -269,7 +260,7 @@ public class Main extends Application {
 	        		}
 				}
 			});
-	        
+
 	        totalCB.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
@@ -278,7 +269,7 @@ public class Main extends Application {
 	        		}
 				}
 			});
-	        
+
 	        maintenanceCB.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
@@ -287,7 +278,7 @@ public class Main extends Application {
 	        		}
 				}
 			});
-	        
+
 	        childChoiceCB.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
@@ -296,7 +287,7 @@ public class Main extends Application {
 	        		}
 				}
 			});
-	        
+
 	        sharedControlCB.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
@@ -305,7 +296,7 @@ public class Main extends Application {
 	        		}
 				}
 			});
-	        
+
 	        contingentCB.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
@@ -314,7 +305,7 @@ public class Main extends Application {
 	        		}
 				}
 			});
-	        
+
 	        naturalCB.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
@@ -323,7 +314,7 @@ public class Main extends Application {
 	        		}
 				}
 			});
-	        
+
 	        attemptsCB.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
@@ -344,7 +335,7 @@ public class Main extends Application {
 	        grid2.setPadding(new Insets(25, 25, 25, 25));
 
 	        ListView<String> list = new ListView<String>();
-	        
+
 	        grid2.add(list, 0, 0);
 	        grid2.setPrefWidth(root.getWidth() * .5);
 
@@ -381,7 +372,17 @@ public class Main extends Application {
 					add.setText("Add Comment");
 				}
 			});
-	        
+
+	        comments.setOnMouseClicked(new EventHandler<MouseEvent>() {
+	            @Override
+                public void handle(MouseEvent event) {
+	                comments.selectAll();
+	                String setString = playTime.getText().substring(0, playTime.getText().indexOf('/'));
+	                fromTime.setText(setString);
+	                toTime.setText(setString);
+	            }
+            });
+
 	        deleteComment.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
@@ -396,7 +397,7 @@ public class Main extends Application {
 					add.setText("Add Comment");
 				}
 			});
-	        
+
 	        printComments.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
@@ -406,15 +407,17 @@ public class Main extends Application {
 					if(file != null) {
 						try {
 							model.printComments(file);
+							fromTime.setText("0:00");
+		                    toTime.setText("0:00");
 						} catch(Exception e) {
 							model.showMessage("Error: There was a problem with creating the .doc file. Please try again.");
 						}
 					}
 				}
 			});
-	        
+
 	        grid2.add(add, 0, 4);
-	        
+
 	        list.setOnMouseClicked(new EventHandler<MouseEvent>() {
 				@Override
 				public void handle(MouseEvent event) {
@@ -445,7 +448,7 @@ public class Main extends Application {
 			openReview.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+O"));
 			MenuItem close = new MenuItem("Close Project");
 			close.setDisable(true);
-			close.setAccelerator(KeyCombination.keyCombination("Ctrl+S"));
+			close.setAccelerator(KeyCombination.keyCombination("Ctrl+W"));
 			MenuItem saveReview = new MenuItem("Save Review");
 			saveReview.setDisable(true);
 			saveReview.setAccelerator(KeyCombination.keyCombination("Ctrl+S"));
@@ -493,18 +496,57 @@ public class Main extends Application {
 			});
 
 			close.setOnAction(event -> {
-			    if (mediaPlayer != null) mediaPlayer.dispose();
-			    outOfTenLabel.setText("No Video Open");
-                mediaBar.setVisible(false);
-                close.setDisable(true);
-                saveReview.setDisable(true);
-                saveReviewAs.setDisable(true);
-                analyze.setDisable(false);
-                comment.setDisable(true);
-                next.setDisable(true);
-                prev.setDisable(true);
-                rewind.setDisable(true);
-                foreward.setDisable(true);
+
+	             if (mediaBar.isVisible()) {
+	                    mediaPlayer.pause();
+	                    Alert closeAlert = new Alert(AlertType.CONFIRMATION);
+	                    closeAlert.setTitle("Close");
+	                    closeAlert.setHeaderText("Are you sure you want to close this review?");
+	                    closeAlert.setContentText("Have you saved all your work?");
+	                    ButtonType buttonTypeOne = new ButtonType("Yes", ButtonData.YES);
+	                    ButtonType buttonTypeCancel = new ButtonType("No", ButtonData.CANCEL_CLOSE);
+	                    closeAlert.getButtonTypes().setAll(buttonTypeOne, buttonTypeCancel);
+	                    Optional<ButtonType> result = closeAlert.showAndWait();
+	                    if (result.isPresent() && result.get() == buttonTypeOne) {
+	                        if (mediaPlayer != null) {
+	                            analyze.fire();
+	                            model.closeVideo();
+	                            mediaPlayer.dispose();
+	                        }
+	                        outOfTenLabel.setText("No Video Open");
+	                        mediaBar.setVisible(false);
+	                        openVideo.setDisable(false);
+	                        openReview.setDisable(false);
+	                        close.setDisable(true);
+	                        saveReview.setDisable(true);
+	                        saveReviewAs.setDisable(true);
+	                        analyze.setDisable(false);
+	                        comment.setDisable(true);
+	                        next.setDisable(true);
+	                        prev.setDisable(true);
+	                        rewind.setDisable(true);
+	                        foreward.setDisable(true);
+	                    }
+	                    else {
+	                        mediaPlayer.play();
+	                    }
+	                }
+	                else {
+	                    if (mediaPlayer != null) mediaPlayer.dispose();
+	                    outOfTenLabel.setText("No Video Open");
+	                    openVideo.setDisable(false);
+                        openReview.setDisable(false);
+	                    mediaBar.setVisible(false);
+	                    close.setDisable(true);
+	                    saveReview.setDisable(true);
+	                    saveReviewAs.setDisable(true);
+	                    analyze.setDisable(false);
+	                    comment.setDisable(true);
+	                    next.setDisable(true);
+	                    prev.setDisable(true);
+	                    rewind.setDisable(true);
+	                    foreward.setDisable(true);
+	                }
 			});
 
 
@@ -514,8 +556,14 @@ public class Main extends Application {
 				fileChooser.setTitle("Open Video File");
 				File file = fileChooser.showOpenDialog(primaryStage);
 				if(file != null) {
-				    if (mediaPlayer != null) mediaPlayer.dispose();
+				    if (mediaPlayer != null) {
+				        mediaPlayer.dispose();
+				    }
+
 					model.openVideo(file);
+					willPause = false;
+	                openVideo.setDisable(true);
+	                openReview.setDisable(true);
 					close.setDisable(false);
 					saveReview.setDisable(false);
 					saveReviewAs.setDisable(false);
@@ -524,7 +572,7 @@ public class Main extends Application {
 					prev.setDisable(false);
 					rewind.setDisable(false);
 					foreward.setDisable(false);
-					
+
 					childAttnCB.setSelected(false);
 					clearOppCB.setSelected(false);
 					totalCB.setSelected(false);
@@ -534,7 +582,7 @@ public class Main extends Application {
 					contingentCB.setSelected(false);
 					naturalCB.setSelected(false);
 					attemptsCB.setSelected(false);
-					
+
 					media =  new Media(model.videoPath);
 					mediaPlayer = new MediaPlayer(media);
 					mediaPlayer.setAutoPlay(true);
@@ -565,7 +613,14 @@ public class Main extends Application {
 		                            willPause = true;
 		                        }
 		                    }
-		                    int timeSlot = (int)(Math.floor(mediaPlayer.getCurrentTime().toMinutes()) + 1);
+		                    int timeSlot;
+		                    if (mediaPlayer.getCurrentTime().toSeconds() - 1 < 0) {
+		                        timeSlot = 1;
+		                    }
+		                    else {
+		                          timeSlot = (int)(Math.ceil((mediaPlayer.getCurrentTime().toSeconds() - 1) / 60));
+
+		                    }
 		                    String oldText = outOfTenLabel.getText();
 		                    outOfTenLabel.setText(timeSlot + " of 10 minutes");
 		                    if (!(oldText.equals(outOfTenLabel.getText()))) {
@@ -624,7 +679,10 @@ public class Main extends Application {
 				fileChooser.setTitle("Open Text File");
 				File file = fileChooser.showOpenDialog(primaryStage);
 				if(file != null) {
-					list.setItems(model.openReview(file, list));
+	                    list.setItems(model.openReview(file, list));
+					willPause = false;
+					openVideo.setDisable(true);
+					openReview.setDisable(true);
 					close.setDisable(false);
 					saveReview.setDisable(false);
 					saveReviewAs.setDisable(false);
@@ -632,7 +690,7 @@ public class Main extends Application {
 					next.setDisable(false);
 					rewind.setDisable(false);
 					foreward.setDisable(false);
-					
+
 					//Video Stuff
 					media =  new Media(model.videoPath);
 					mediaPlayer = new MediaPlayer(media);
@@ -717,7 +775,7 @@ public class Main extends Application {
 		                mediaBar.setVisible(true);
 				}
 			});
-			
+
 			saveReview.setOnAction(event -> {
 				if(model.filePath != null) {
 					try {
@@ -738,7 +796,7 @@ public class Main extends Application {
 					}
 				}
 			});
-			
+
 			saveReviewAs.setOnAction(event -> {
 				FileChooser fileChooser = new FileChooser();
 				fileChooser.setTitle("Save Review As");
@@ -751,8 +809,58 @@ public class Main extends Application {
 					}
 				}
 			});
-			
-			quit.setOnAction(event -> System.exit(0)); //exits program
+
+
+			quit.setOnAction(event -> {
+			    if (mediaBar.isVisible()) {
+			        mediaPlayer.pause();
+		            Alert quitAlert = new Alert(AlertType.CONFIRMATION);
+		            quitAlert.setTitle("Quit");
+		            quitAlert.setHeaderText("Are you sure you want to quit?");
+		            quitAlert.setContentText("Have you saved all your work?");
+		            ButtonType buttonTypeOne = new ButtonType("Yes", ButtonData.YES);
+		            ButtonType buttonTypeCancel = new ButtonType("No", ButtonData.CANCEL_CLOSE);
+		            quitAlert.getButtonTypes().setAll(buttonTypeOne, buttonTypeCancel);
+		            Optional<ButtonType> result = quitAlert.showAndWait();
+		            if (result.isPresent() && result.get() == buttonTypeOne) {
+		                analyze.fire();
+                        model.closeVideo();
+		                System.exit(0);
+		            }
+		            else {
+		                mediaPlayer.play();
+		            }
+			    }
+			    else {
+			        System.exit(0);
+			    }
+			}); //exits program
+
+			primaryStage.setOnCloseRequest(event -> {
+	             if (mediaBar.isVisible()) {
+	                 mediaPlayer.pause();
+	                    Alert quitAlert = new Alert(AlertType.CONFIRMATION);
+	                    quitAlert.setTitle("Quit");
+	                    quitAlert.setHeaderText("Are you sure you want to quit?");
+	                    quitAlert.setContentText("Have you saved all your work?");
+	                    ButtonType buttonTypeOne = new ButtonType("Yes", ButtonData.YES);
+	                    ButtonType buttonTypeCancel = new ButtonType("No", ButtonData.CANCEL_CLOSE);
+	                    quitAlert.getButtonTypes().setAll(buttonTypeOne, buttonTypeCancel);
+	                    Optional<ButtonType> result = quitAlert.showAndWait();
+	                    if (result.isPresent() && result.get() == buttonTypeOne) {
+	                        analyze.fire();
+                            model.closeVideo();
+	                        System.exit(0);
+	                    }
+	                    else {
+	                        event.consume();
+	                        mediaPlayer.play();
+	                    }
+	                }
+	                else {
+	                    System.exit(0);
+	                }
+			});
 
 			analyze.setOnAction(event -> {//change view to show the analysis screen
 				root.setRight(grid);
@@ -765,6 +873,7 @@ public class Main extends Application {
 				analyze.setDisable(false);
 				comment.setDisable(true);
 			});
+
 
 			rewind.setOnAction(new EventHandler<ActionEvent>() {
 	            public void handle(ActionEvent e) {
