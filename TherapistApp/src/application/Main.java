@@ -397,6 +397,22 @@ public class Main extends Application {
 				}
 			});
 	        
+	        printComments.setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent event) {
+					FileChooser fileChooser = new FileChooser();
+					fileChooser.setTitle("Save Comments As");
+					File file = fileChooser.showSaveDialog(primaryStage);
+					if(file != null) {
+						try {
+							model.printComments(file);
+						} catch(Exception e) {
+							model.showMessage("Error: There was a problem with creating the .doc file. Please try again.");
+						}
+					}
+				}
+			});
+	        
 	        grid2.add(add, 0, 4);
 	        
 	        list.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -427,7 +443,6 @@ public class Main extends Application {
 			openVideo.setAccelerator(KeyCombination.keyCombination("Ctrl+O"));
 			MenuItem openReview = new MenuItem("Open Review");
 			openReview.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+O"));
-			openReview.setDisable(true);
 			MenuItem close = new MenuItem("Close Project");
 			close.setDisable(true);
 			close.setAccelerator(KeyCombination.keyCombination("Ctrl+S"));
@@ -482,9 +497,10 @@ public class Main extends Application {
 			    outOfTenLabel.setText("No Video Open");
                 mediaBar.setVisible(false);
                 close.setDisable(true);
-                saveReview.setDisable(false);
-                saveReviewAs.setDisable(false);
-                comment.setDisable(false);
+                saveReview.setDisable(true);
+                saveReviewAs.setDisable(true);
+                analyze.setDisable(false);
+                comment.setDisable(true);
                 next.setDisable(true);
                 prev.setDisable(true);
                 rewind.setDisable(true);
@@ -608,7 +624,7 @@ public class Main extends Application {
 				fileChooser.setTitle("Open Text File");
 				File file = fileChooser.showOpenDialog(primaryStage);
 				if(file != null) {
-					model.openVideo(file);
+					list.setItems(model.openReview(file, list));
 					close.setDisable(false);
 					saveReview.setDisable(false);
 					saveReviewAs.setDisable(false);
@@ -616,8 +632,127 @@ public class Main extends Application {
 					next.setDisable(false);
 					rewind.setDisable(false);
 					foreward.setDisable(false);
+					
+					//Video Stuff
+					media =  new Media(model.videoPath);
+					mediaPlayer = new MediaPlayer(media);
+					mediaPlayer.setAutoPlay(true);
+		            mediaView = new MediaView(mediaPlayer);
+		              mediaView.setPreserveRatio(true);
+		                mediaPane.getChildren().clear();
+		                mediaPane.getChildren().add(mediaView);
+		                mediaView.setFitWidth(0.5 * root.getWidth());
+		                HBox hbVideo = new HBox();
+		                hbVideo.setStyle("-fx-background-color: black;");
+		                hbVideo.setAlignment(Pos.CENTER);
+		                hbVideo.getChildren().add(mediaPane);
+		                root.setCenter(hbVideo);
+		                mediaPlayer.currentTimeProperty().addListener(new InvalidationListener() {
+		                    public void invalidated(Observable ov) {
+		                        updateValues();
+		                    }
+		                });
+		                mediaPlayer.currentTimeProperty().addListener((observable) ->{
+		                    if (boolAutoPause) {
+		                        if (Math.floor(mediaPlayer.getCurrentTime().toSeconds()) % 60 == 0) {
+		                            if (willPause) {
+		                                mediaPlayer.pause();
+		                                willPause = false;
+		                            }
+		                        }
+		                        else {
+		                            willPause = true;
+		                        }
+		                    }
+		                    int timeSlot = (int)(Math.floor(mediaPlayer.getCurrentTime().toMinutes()) + 1);
+		                    String oldText = outOfTenLabel.getText();
+		                    outOfTenLabel.setText(timeSlot + " of 10 minutes");
+		                    if (!(oldText.equals(outOfTenLabel.getText()))) {
+		                    	childAttnCB.setSelected(model.fidelityResponses[timeSlot - 1][0]);
+		    					clearOppCB.setSelected(model.fidelityResponses[timeSlot - 1][1]);
+		    					totalCB.setSelected(model.fidelityResponses[timeSlot - 1][2]);
+		    					maintenanceCB.setSelected(model.fidelityResponses[timeSlot - 1][3]);
+		    					childChoiceCB.setSelected(model.fidelityResponses[timeSlot - 1][4]);
+		    					sharedControlCB.setSelected(model.fidelityResponses[timeSlot - 1][5]);
+		    					contingentCB.setSelected(model.fidelityResponses[timeSlot - 1][6]);
+		    					naturalCB.setSelected(model.fidelityResponses[timeSlot - 1][7]);
+		    					attemptsCB.setSelected(model.fidelityResponses[timeSlot - 1][8]);
+		                    }
+                        });
+		                mediaPlayer.setOnPlaying(new Runnable() {
+		                    public void run() {
+		                        if (stopRequested) {
+		                            mediaPlayer.pause();
+		                            stopRequested = false;
+		                        } else {
+		                            playButton.setText("||");
+		                        }
+		                    }
+		                });
+
+		                mediaPlayer.setOnPaused(new Runnable() {
+		                    public void run() {
+		                       // System.out.println("onPaused");
+		                        playButton.setText(">");
+		                    }
+		                });
+
+		                mediaPlayer.setOnReady(new Runnable() {
+		                    public void run() {
+		                        duration = mediaPlayer.getMedia().getDuration();
+		                        updateValues();
+		                    }
+		                });
+
+		                mediaPlayer.setCycleCount(repeat ? MediaPlayer.INDEFINITE : 1);
+		                mediaPlayer.setOnEndOfMedia(new Runnable() {
+		                    public void run() {
+		                        if (!repeat) {
+		                            playButton.setText(">");
+		                            stopRequested = true;
+		                            atEndOfMedia = true;
+		                        }
+		                    }
+		                });
+		                mediaBar.setVisible(true);
 				}
 			});
+			
+			saveReview.setOnAction(event -> {
+				if(model.filePath != null) {
+					try {
+						model.saveReview();
+					} catch(Exception e) {
+						model.showMessage("Error: We had trouble saving to the file. Did you change the location of the file?");
+					}
+				} else {
+					FileChooser fileChooser = new FileChooser();
+					fileChooser.setTitle("Save Review As");
+					File file = fileChooser.showSaveDialog(primaryStage);
+					if(file != null) {
+						try {
+							model.saveReviewAs(file);
+						} catch(Exception e) {
+							model.showMessage("Error: Failed to save review. Please try again.");
+						}
+					}
+				}
+			});
+			
+			saveReviewAs.setOnAction(event -> {
+				FileChooser fileChooser = new FileChooser();
+				fileChooser.setTitle("Save Review As");
+				File file = fileChooser.showSaveDialog(primaryStage);
+				if(file != null) {
+					try {
+						model.saveReviewAs(file);
+					} catch(Exception e) {
+						model.showMessage("Error: Failed to save review. Please try again.");
+					}
+				}
+			});
+			
+			quit.setOnAction(event -> System.exit(0)); //exits program
 
 			analyze.setOnAction(event -> {//change view to show the analysis screen
 				root.setRight(grid);
