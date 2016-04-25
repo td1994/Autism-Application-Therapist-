@@ -4,7 +4,7 @@
 		<path id="fxant">
 			<filelist>
 				<file name="C:\Program Files\Java\jdk1.8.0_92\lib\ant-javafx.jar"/>
-				<file name="\Program Files\Java\jdk1.8.0_92\lib\jfxrt.jar"/>
+				<file name="C:\Program Files\Java\jdk1.8.0_92\lib\jfxrt.jar"/>
 			</filelist>
 		</path>
 	

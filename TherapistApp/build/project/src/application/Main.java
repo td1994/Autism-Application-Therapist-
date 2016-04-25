@@ -383,8 +383,21 @@ public class Main extends Application {
 				@Override
 				public void handle(MouseEvent event) {
 					comments.selectAll();
+				}
+			});
+			
+			fromTime.setOnMouseClicked(new EventHandler<MouseEvent>() {
+				@Override
+				public void handle(MouseEvent event) {
 					String setString = playTime.getText().substring(0, playTime.getText().indexOf('/'));
 					fromTime.setText(setString);
+				}
+			});
+			
+			toTime.setOnMouseClicked(new EventHandler<MouseEvent>() {
+				@Override
+				public void handle(MouseEvent event) {
+					String setString = playTime.getText().substring(0, playTime.getText().indexOf('/'));
 					toTime.setText(setString);
 				}
 			});
@@ -519,6 +532,7 @@ public class Main extends Application {
 							analyze.fire();
 							model.closeVideo();
 							mediaPlayer.dispose();
+							System.gc();
 						}
 						//clear all values in both views
 						root.setRight(grid);
@@ -556,7 +570,10 @@ public class Main extends Application {
 					}
 				} else {
 					if (mediaPlayer != null)
+					{
 						mediaPlayer.dispose();
+						System.gc();
+					}
 					outOfTenLabel.setText("No Video Open");
 					openVideo.setDisable(false);
 					openReview.setDisable(false);
@@ -587,6 +604,7 @@ public class Main extends Application {
 
 					try {
 						model.openVideo(file);
+						System.gc();
 						willPause = false;
 						openVideo.setDisable(true);
 						openReview.setDisable(true);
@@ -724,6 +742,7 @@ public class Main extends Application {
 				if (file != null) {
 					try {
 						list.setItems(model.openReview(file, list));
+						System.gc();
 						willPause = false;
 						openVideo.setDisable(true);
 						openReview.setDisable(true);

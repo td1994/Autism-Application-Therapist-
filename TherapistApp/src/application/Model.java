@@ -40,7 +40,6 @@ public class Model {
 
 	public boolean[][] fidelityResponses;
 	public ArrayList<Comment> comments;
-	public EncryptFile encryptor;
 
 	public Model() {
 		fidelityResponses = new boolean[10][9];
@@ -62,14 +61,18 @@ public class Model {
 			throw new Exception();
 		}
 		showMessage("Decrypting Video: Please be patient");
-		encryptor.encrypt(file.getCanonicalPath(), 1024);
+		EncryptFile encryptor = new EncryptFile();
+		encryptor.encrypt(file.getCanonicalPath(), 4096);
+		encryptor = null;
 		showMessage("Decryption Complete!");
 	}
 
 	public void closeVideo() {
 		try {
 			showMessage("Encrypting Video: Please be patient");
-			encryptor.encrypt(toCanonicalPath(videoPath), 1024);
+			EncryptFile encryptor = new EncryptFile();
+			encryptor.encrypt(toCanonicalPath(videoPath), 4096);
+			encryptor = null;
 			showMessage("Encryption Complete!");
 		} catch (Exception e) {
 			showMessage("Error: File Encryption Failed");
@@ -100,8 +103,10 @@ public class Model {
 			throw new Exception();
 		}
 		showMessage("Decrypting Video: Please be patient");
-		encryptor.encrypt(toCanonicalPath(videoPath), 1024);
+		EncryptFile encryptor = new EncryptFile();
+		encryptor.encrypt(toCanonicalPath(videoPath), 4096);
 		showMessage("Decryption Complete!");
+		encryptor = null;
 		for (int i = 0; i < fidelityResponses.length; i++) {
 			String input = br.readLine();
 			input = input.substring(input.indexOf(':') + 1);
