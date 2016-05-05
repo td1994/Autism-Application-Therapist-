@@ -12,6 +12,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.scene.Scene;
@@ -48,6 +49,7 @@ public class Main extends Application {
 	private boolean willPause = false;
 	private boolean boolAutoPause = true;
 	private int commentItem;
+	private int timeSlot;
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -205,6 +207,13 @@ public class Main extends Application {
 			Time.setAlignment(Pos.CENTER);
 			Label outOfTenLabel = new Label("No Video Open");
 			Time.getChildren().add(outOfTenLabel);
+			HBox name = new HBox();
+            name.setAlignment(Pos.TOP_LEFT);
+            name.getChildren().add(new Label("Name:"));
+            HBox date = new HBox();
+            date.setAlignment(Pos.TOP_LEFT);
+            date.getChildren().add(new Label("Date:"));
+
 
 			// adds HBoxes to the grid
 			grid.add(childAttn, 0, 0);
@@ -217,6 +226,8 @@ public class Main extends Application {
 			grid.add(natural, 0, 7);
 			grid.add(attempts, 0, 8);
 			grid.add(Time, 1, 9);
+			grid.add(name, 0, 10);
+			grid.add(date, 0, 11);
 
 			CheckBox childAttnCB = new CheckBox();
 			CheckBox clearOppCB = new CheckBox();
@@ -227,6 +238,9 @@ public class Main extends Application {
 			CheckBox contingentCB = new CheckBox();
 			CheckBox naturalCB = new CheckBox();
 			CheckBox attemptsCB = new CheckBox();
+			TextField nameTF = new TextField();
+			DatePicker dateP = new DatePicker();
+			totalCB.setDisable(true);
 
 			// adds HBoxes to the grid
 			grid.add(childAttnCB, 1, 0);
@@ -238,11 +252,21 @@ public class Main extends Application {
 			grid.add(contingentCB, 1, 6);
 			grid.add(naturalCB, 1, 7);
 			grid.add(attemptsCB, 1, 8);
+			grid.add(nameTF, 1, 10);
+			grid.add(dateP, 1, 11);
 
 			childAttnCB.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
 					if (model.videoPath != null) {
+					    if (childAttnCB.isSelected() && clearOppCB.isSelected()) {
+					        totalCB.setSelected(true);
+                            System.out.println(totalCB.isSelected());
+
+					    }
+					    else {
+					        totalCB.setSelected(false);
+					    }
 						model.fidelityResponse((int) (Math.floor(mediaPlayer.getCurrentTime().toMinutes())), 0,
 								childAttnCB.isSelected());
 					}
@@ -253,7 +277,14 @@ public class Main extends Application {
 				@Override
 				public void handle(ActionEvent event) {
 					if (model.videoPath != null) {
-						model.fidelityResponse((int) (Math.floor(mediaPlayer.getCurrentTime().toMinutes())), 1,
+			               if (childAttnCB.isSelected() && clearOppCB.isSelected()) {
+	                            totalCB.setSelected(true);
+	                            System.out.println(totalCB.isSelected());
+	                        }
+	                        else {
+	                            totalCB.setSelected(false);
+	                        }
+						model.fidelityResponse((timeSlot - 1), 1,
 								clearOppCB.isSelected());
 					}
 				}
@@ -263,7 +294,7 @@ public class Main extends Application {
 				@Override
 				public void handle(ActionEvent event) {
 					if (model.videoPath != null) {
-						model.fidelityResponse((int) (Math.floor(mediaPlayer.getCurrentTime().toMinutes())), 2,
+						model.fidelityResponse((timeSlot - 1), 2,
 								totalCB.isSelected());
 					}
 				}
@@ -273,7 +304,7 @@ public class Main extends Application {
 				@Override
 				public void handle(ActionEvent event) {
 					if (model.videoPath != null) {
-						model.fidelityResponse((int) (Math.floor(mediaPlayer.getCurrentTime().toMinutes())), 3,
+						model.fidelityResponse((timeSlot - 1), 3,
 								maintenanceCB.isSelected());
 					}
 				}
@@ -283,7 +314,7 @@ public class Main extends Application {
 				@Override
 				public void handle(ActionEvent event) {
 					if (model.videoPath != null) {
-						model.fidelityResponse((int) (Math.floor(mediaPlayer.getCurrentTime().toMinutes())), 4,
+						model.fidelityResponse((timeSlot - 1), 4,
 								childChoiceCB.isSelected());
 					}
 				}
@@ -293,7 +324,7 @@ public class Main extends Application {
 				@Override
 				public void handle(ActionEvent event) {
 					if (model.videoPath != null) {
-						model.fidelityResponse((int) (Math.floor(mediaPlayer.getCurrentTime().toMinutes())), 5,
+						model.fidelityResponse((timeSlot - 1), 5,
 								sharedControlCB.isSelected());
 					}
 				}
@@ -303,7 +334,7 @@ public class Main extends Application {
 				@Override
 				public void handle(ActionEvent event) {
 					if (model.videoPath != null) {
-						model.fidelityResponse((int) (Math.floor(mediaPlayer.getCurrentTime().toMinutes())), 6,
+						model.fidelityResponse((timeSlot - 1), 6,
 								contingentCB.isSelected());
 					}
 				}
@@ -313,7 +344,7 @@ public class Main extends Application {
 				@Override
 				public void handle(ActionEvent event) {
 					if (model.videoPath != null) {
-						model.fidelityResponse((int) (Math.floor(mediaPlayer.getCurrentTime().toMinutes())), 7,
+						model.fidelityResponse((timeSlot - 1), 7,
 								naturalCB.isSelected());
 					}
 				}
@@ -323,7 +354,7 @@ public class Main extends Application {
 				@Override
 				public void handle(ActionEvent event) {
 					if (model.videoPath != null) {
-						model.fidelityResponse((int) (Math.floor(mediaPlayer.getCurrentTime().toMinutes())), 8,
+						model.fidelityResponse((timeSlot - 1), 8,
 								attemptsCB.isSelected());
 					}
 				}
@@ -385,7 +416,7 @@ public class Main extends Application {
 					comments.selectAll();
 				}
 			});
-			
+
 			fromTime.setOnMouseClicked(new EventHandler<MouseEvent>() {
 				@Override
 				public void handle(MouseEvent event) {
@@ -393,7 +424,7 @@ public class Main extends Application {
 					fromTime.setText(setString);
 				}
 			});
-			
+
 			toTime.setOnMouseClicked(new EventHandler<MouseEvent>() {
 				@Override
 				public void handle(MouseEvent event) {
@@ -420,8 +451,12 @@ public class Main extends Application {
 			printComments.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
+				    model.name = nameTF.getText();
+	                model.date = dateP.getEditor().getText();
+	                model.date = model.date.replace("/", ".");
 					FileChooser fileChooser = new FileChooser();
 					fileChooser.setTitle("Save Comments As");
+	                fileChooser.setInitialFileName(model.name + "." + model.date + "-Comments");
 					File file = fileChooser.showSaveDialog(primaryStage);
 					if (file != null) {
 						try {
@@ -474,6 +509,8 @@ public class Main extends Application {
 			saveReview.setAccelerator(KeyCombination.keyCombination("Ctrl+S"));
 			MenuItem saveReviewAs = new MenuItem("Save Review As");
 			saveReviewAs.setDisable(true);
+			MenuItem printCSV = new MenuItem("Print to CSV");
+			printCSV.setDisable(true);
 			saveReviewAs.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+S"));
 			MenuItem quit = new MenuItem("Quit");
 			quit.setAccelerator(KeyCombination.keyCombination("Ctrl+Q"));
@@ -504,6 +541,31 @@ public class Main extends Application {
 			// displays the Menu Bar "Help" option with all options and hotkeys
 			Menu menuHelp = new Menu("Help");
 			MenuItem about = new MenuItem("About");
+
+			printCSV.setOnAction(event -> {
+			    try
+                {
+			        model.name = nameTF.getText();
+                    model.date = dateP.getEditor().getText();
+                    model.date = model.date.replace("/", ".");
+                    FileChooser fileChooser = new FileChooser();
+                    fileChooser.setTitle("Save CSV As");
+                    fileChooser.setInitialFileName(model.name + "." + model.date);
+                    fileChooser.getExtensionFilters().add(new ExtensionFilter("csv", "*.csv"));
+                    File file = fileChooser.showSaveDialog(primaryStage);
+                    if (file != null) {
+                        try {
+                            model.printCSV(file);
+                        } catch (Exception e) {
+                            model.showMessage("Error: Failed to print CSV. Please try again.");
+                        }
+                    }
+                }
+                catch (Exception e1)
+			    {
+                    e1.printStackTrace();
+                }
+			});
 
 			autoPause.setOnAction(event -> {
 				if (boolAutoPause) {
@@ -551,7 +613,7 @@ public class Main extends Application {
 						toTime.setText("0:00");
 						comments.setText("Write comments here...");
 						add.setText("Add Comment");
-						
+
 						outOfTenLabel.setText("No Video Open");
 						mediaBar.setVisible(false);
 						openVideo.setDisable(false);
@@ -559,6 +621,7 @@ public class Main extends Application {
 						close.setDisable(true);
 						saveReview.setDisable(true);
 						saveReviewAs.setDisable(true);
+						printCSV.setDisable(true);
 						analyze.setDisable(true);
 						comment.setDisable(true);
 						next.setDisable(true);
@@ -581,6 +644,7 @@ public class Main extends Application {
 					close.setDisable(true);
 					saveReview.setDisable(true);
 					saveReviewAs.setDisable(true);
+					printCSV.setDisable(true);
 					analyze.setDisable(false);
 					comment.setDisable(true);
 					next.setDisable(true);
@@ -611,6 +675,7 @@ public class Main extends Application {
 						close.setDisable(false);
 						saveReview.setDisable(false);
 						saveReviewAs.setDisable(false);
+						printCSV.setDisable(false);
 						analyze.setDisable(true);
 						comment.setDisable(false);
 						next.setDisable(false);
@@ -657,11 +722,10 @@ public class Main extends Application {
 									willPause = true;
 								}
 							}
-							int timeSlot;
 							if (mediaPlayer.getCurrentTime().toSeconds() - 1 <= 0) {
 								timeSlot = 1;
 							} else {
-								timeSlot = (int) (Math.ceil((mediaPlayer.getCurrentTime().toSeconds()) / 60));
+								timeSlot = (int) (Math.ceil((mediaPlayer.getCurrentTime().toSeconds() - 1) / 60));
 
 							}
 							String oldText = outOfTenLabel.getText();
@@ -677,7 +741,7 @@ public class Main extends Application {
 								} else {
 									prev.setDisable(true);
 								}
-								
+
 								childAttnCB.setSelected(model.fidelityResponses[timeSlot - 1][0]);
 								clearOppCB.setSelected(model.fidelityResponses[timeSlot - 1][1]);
 								totalCB.setSelected(model.fidelityResponses[timeSlot - 1][2]);
@@ -738,24 +802,29 @@ public class Main extends Application {
 												// enables test options
 				FileChooser fileChooser = new FileChooser();
 				fileChooser.setTitle("Open Text File");
+                fileChooser.getExtensionFilters().add(new ExtensionFilter("txt", "*.txt"));
 				File file = fileChooser.showOpenDialog(primaryStage);
 				if (file != null) {
 					try {
 						list.setItems(model.openReview(file, list));
 						System.gc();
+						nameTF.setText(model.name);
+						dateP.getEditor().setText(model.date.replace(".", "/"));
+						System.out.println(model.date.replace(".", "/"));
 						willPause = false;
 						openVideo.setDisable(true);
 						openReview.setDisable(true);
 						close.setDisable(false);
 						saveReview.setDisable(false);
 						saveReviewAs.setDisable(false);
+						printCSV.setDisable(false);
 						analyze.setDisable(true);
 						comment.setDisable(false);
 						prev.setDisable(true);
 						next.setDisable(false);
 						rewind.setDisable(false);
 						foreward.setDisable(false);
-						
+
 						// Video Stuff
 						media = new Media(model.videoPath);
 						mediaPlayer = new MediaPlayer(media);
@@ -786,11 +855,10 @@ public class Main extends Application {
 									willPause = true;
 								}
 							}
-							int timeSlot;
 							if (mediaPlayer.getCurrentTime().toSeconds() - 1 <= 0) {
 								timeSlot = 1;
 							} else {
-								timeSlot = (int) (Math.ceil((mediaPlayer.getCurrentTime().toSeconds()) / 60));
+								timeSlot = (int) (Math.ceil((mediaPlayer.getCurrentTime().toSeconds() - 1) / 60));
 
 							}
 							String oldText = outOfTenLabel.getText();
@@ -806,7 +874,7 @@ public class Main extends Application {
 								} else {
 									prev.setDisable(true);
 								}
-								
+
 								childAttnCB.setSelected(model.fidelityResponses[timeSlot - 1][0]);
 								clearOppCB.setSelected(model.fidelityResponses[timeSlot - 1][1]);
 								totalCB.setSelected(model.fidelityResponses[timeSlot - 1][2]);
@@ -866,14 +934,21 @@ public class Main extends Application {
 			saveReview.setOnAction(event -> {
 				if (model.filePath != null) {
 					try {
+					    model.name = nameTF.getText();
+					    model.date = dateP.getEditor().getText();
+					    model.date = model.date.replace("/", ".");
 						model.saveReview();
 					} catch (Exception e) {
 						model.showMessage(
 								"Error: We had trouble saving to the file. Did you change the location of the file?");
 					}
 				} else {
+				    model.name = nameTF.getText();
+                    model.date = dateP.getEditor().getText();
+                    model.date = model.date.replace("/", ".");
 					FileChooser fileChooser = new FileChooser();
 					fileChooser.setTitle("Save Review As");
+                    fileChooser.setInitialFileName(model.name + "." + model.date);
 					File file = fileChooser.showSaveDialog(primaryStage);
 					if (file != null) {
 						try {
@@ -886,8 +961,12 @@ public class Main extends Application {
 			});
 
 			saveReviewAs.setOnAction(event -> {
+                model.name = nameTF.getText();
+                model.date = dateP.getEditor().getText();
+                model.date = model.date.replace("/", ".");
 				FileChooser fileChooser = new FileChooser();
 				fileChooser.setTitle("Save Review As");
+                fileChooser.setInitialFileName(model.name + "." + model.date);
 				File file = fileChooser.showSaveDialog(primaryStage);
 				if (file != null) {
 					try {
@@ -1006,14 +1085,14 @@ public class Main extends Application {
 					mediaPlayer.seek(newTime);
 				}
 			});
-			
+
 			about.setOnAction(new EventHandler<ActionEvent>() {
 				public void handle(ActionEvent e) {
 					model.showMessage("Created by Thomas Dowey, Tyler DeYoung, Alan Morrison, and Laxmi Patha.");
 				}
 			});
 
-			menuFile.getItems().addAll(openVideo, openReview, saveReview, saveReviewAs, close, quit);
+			menuFile.getItems().addAll(openVideo, openReview, saveReview, saveReviewAs, printCSV, close, quit);
 			menuNavigate.getItems().addAll(analyze, comment, prev, next, rewind, foreward, autoPause);
 			menuHelp.getItems().addAll(about);
 			menuBar.getMenus().addAll(menuFile, menuNavigate, menuHelp);

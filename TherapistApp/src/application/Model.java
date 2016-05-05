@@ -33,6 +33,9 @@ public class Model {
 	 * The path of the video being reviewed
 	 */
 	public String videoPath;
+	public String name;
+	public String date;
+
 	/**
 	 * The path of the files being used
 	 */
@@ -49,10 +52,10 @@ public class Model {
 	// ----------------------------------------------------------
 	/**
 	 * Opens a video from file
-	 * 
+	 *
 	 * @param file
 	 *            the file to be read
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public void openVideo(File file) throws Exception {
 		videoPath = "file://"
@@ -83,10 +86,10 @@ public class Model {
 	// ----------------------------------------------------------
 	/**
 	 * Opens a text file for review
-	 * 
+	 *
 	 * @param file
 	 *            the file to be read
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public ObservableList<String> openReview(File file, ListView list) throws Exception {
 		ObservableList<String> items = list.getItems();
@@ -107,6 +110,12 @@ public class Model {
 		encryptor.encrypt(toCanonicalPath(videoPath), 4096);
 		showMessage("Decryption Complete!");
 		encryptor = null;
+
+		name = br.readLine();
+		name = name.substring(name.indexOf(':') + 1);
+		date = br.readLine();
+		date = date.substring(date.indexOf(':') + 1);
+
 		for (int i = 0; i < fidelityResponses.length; i++) {
 			String input = br.readLine();
 			input = input.substring(input.indexOf(':') + 1);
@@ -199,6 +208,8 @@ public class Model {
 		comments.toArray(commentArray);
 		PrintWriter writer = new PrintWriter(filePath);
 		writer.println("VideoPath:" + videoPath);
+	    writer.println("Name:" + name);
+	    writer.println("Date:" + date);
 		for (int i = 0; i < fidelityResponses.length; i++) {
 			writer.print("FidelityMinute" + i + ":");
 			for (int j = 0; j < fidelityResponses[i].length; j++) {
@@ -219,10 +230,47 @@ public class Model {
 		saveReview();
 	}
 
+	   public void printCSV(File file) throws IOException {
+	        PrintWriter writer = new PrintWriter(file.getCanonicalPath() + ".csv");
+	        writer.println("Name:" + name);
+	        writer.println("Date:" + date);
+	        writer.println("Interval,Child Attention,Clear Opportunity,Total,Maintenance Tasks/Task Variation,Child Choice/Follow Child's Lead,Shared Control,Contingent,Natural,Attempts");
+
+	        for (int i = 0; i < fidelityResponses.length; i++) {
+	            writer.print((i + 1) + ",");
+	            for (int j = 0; j < fidelityResponses[i].length; j++) {
+	                if (fidelityResponses[i][j]) {
+	                    writer.print("1");
+	                }
+	                else {
+	                    writer.print("0");
+	                }
+                    if (j != 8) {
+                        writer.print(",");
+                    }
+	            }
+	            writer.println();
+	        }
+	        writer.println();
+	        writer.print("%,,,");
+	        for (int j = 2; j < 9; j++) {
+	            int sum = 0;
+                for (int i = 0; i < fidelityResponses.length; i++) {
+                    if (fidelityResponses[i][j]) sum++;
+                }
+                writer.print(sum * 10 + "%");
+                if (j != 8) {
+                    writer.print(",");
+                }
+	        }
+
+	        writer.close();
+	    }
+
 	public String toCanonicalPath(String filePath) {
 		return filePath.replace("file://", "C:").replace("/", "\\");
 	}
-	
+
 	public void clearData() {
 		videoPath = null;
 		filePath = null;
